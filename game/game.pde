@@ -1,12 +1,15 @@
 float framerate = 60;
+boolean hasSwapped = false;
 Board board; 
+
 
 void setup() {
   size(500, 500);
   frameRate(framerate);
   background(30);
+  strokeWeight(1);
   
-  board = new Board(6, 8, 50);
+  board = new Board(9, 9, 50);
   board.setup();
 }
 
@@ -17,32 +20,52 @@ void draw() {
 void mousePressed(){
   Matchable m1 = board.lookForMatchable(mouseX, mouseY);
   board.setActiveMatchable(m1);
+  hasSwapped = false;
 }
 
 void mouseDragged(){
-  Matchable m2 = board.lookForMatchable(mouseX, mouseY);
-  if(board.validSwap(m2)){
-    board.swap(m2);
-  };
+  if(!hasSwapped)
+  {
+    Matchable m2 = board.lookForMatchable(mouseX, mouseY);
+    if(board.isValidSwap(m2)){
+      board.swap(m2);
+      hasSwapped = true;
+    };
+  }
 }
 
 class Board{
   Matchable[][] board;
-  int boardWidth, boardHeight, size;
+  int boardWidth, boardHeight, matchableSize;
   Matchable activeMatchable;
   
   Board(int x, int y, int size){
     boardWidth = x;
     boardHeight = y;
-    this.size = size;
+    matchableSize = size;
     
     board = new Matchable[x][y];  
   }
   
   void setup(){
+    int thisColor = 0;
+    int lastColor = 0;
+    int repeats   = 0;
+    
     for (int i = 0; i < boardWidth; i++){
       for (int j = 0; j < boardHeight; j++){
-        board[i][j] = new Matchable(i, j, size, (int)random(7));
+        do {
+          thisColor = (int)random(7);
+          if (thisColor == lastColor){
+            repeats++;
+          }
+          else{
+            repeats = 0;
+          }
+          lastColor = thisColor;
+        } while (repeats > 1 || (i>0 && (board[i-1][j].colorID != thisColor)));
+        
+        board[i][j] = new Matchable(i, j, matchableSize, thisColor);
         board[i][j].display();
       }
     }
@@ -57,34 +80,88 @@ class Board{
   }
   
   void swap(Matchable m){
-    color temp = m.c;
-    m.c = activeMatchable.c;
-    activeMatchable.c = temp;
+    int tx, ty, tsize, tc;
+    
+    //Matchable temp = new Matchable();
+    //temp = board[m.x][m.y];
+    //board[m.x][m.y] = board[activeMatchable.x][activeMatchable.y];
+    //board[activeMatchable.x][activeMatchable.y] = temp;
+    
+    Matchable a = board[m.x][m.y];
+    Matchable b = board[activeMatchable.x][activeMatchable.y];
+    
+    tx = a.x;
+    a.x = b.x;
+    b.x = tx;
+    
+    ty = a.y;
+    a.y = b.y;
+    b.y = ty;
+    
+    tsize = a.size;
+    a.size = b.size;
+    b.size = tsize;
+    
+    tc = a.colorID;
+    a.colorID = b.colorID;
+    b.colorID = tc;
+    
+    a.isClicked = false;
+    b.isClicked = false;
+    
+    board[a.x][a.y] = new Matchable(b.x, b.y, b.size, b.colorID);
+    board[b.x][b.y] = new Matchable(a.x, a.y, a.size, a.colorID);
+    
+    activeMatchable = null;
+    display();
   }
   
-  boolean validSwap(Matchable m){
+  boolean isValidSwap(Matchable m){
     if (m == null){
-      println("m is null");
       return false;
     }
-    if(activeMatchable == null){
-      println("activeMatchable is null");
+    else if (activeMatchable == null){
+      return false;
     }
-    if (m.getX() > activeMatchable.getX()){
+    else if (m.c == activeMatchable.c){
+      return false;
+    }
+    else if (isAdjacent(m)){
+      return true;
+    }
+    return false;
+  }
+  
+  private boolean isAdjacent(Matchable m){
+    // left -> right swap
+    if(m.x > activeMatchable.x && m.x < (activeMatchable.x + 2)){
+      return true;
+    }
+    // down -> up swap
+    else if (m.y < activeMatchable.y && m.y > (activeMatchable.y - 2)){
+      return true;
+    }
+    // right -> left swap
+    else if (m.x < activeMatchable.x && m.x > (activeMatchable.x - 2)){
+      return true;
+    }
+    // up -> down swap
+    else if(m.y > activeMatchable.y && m.y < (activeMatchable.y + 2)){
       return true;
     }
     return false;
   }
   
   void setActiveMatchable(Matchable m){
+    if (activeMatchable != null){activeMatchable.toggleClicked();}
     activeMatchable = m;
-    m.isClicked();
+    m.toggleClicked();
   }
   
   Matchable lookForMatchable(int x, int y){
     for (int i = 0; i < boardWidth; i++){
       for (int j = 0; j < boardHeight; j++){
-        if (x > i*size && x < (i+1)*size && y > j*size && y < (j+1)*size){
+        if (x > i*matchableSize && x < (i+1)*matchableSize && y > j*matchableSize && y < (j+1)*matchableSize){
           return board[i][j];
         }
       }
@@ -94,14 +171,32 @@ class Board{
 }
 
 class Matchable{
-  int x, y, size;
+  int x, y, size, colorID;
   boolean isClicked;
-  color c;
-
+  
+  private color c;
+  
+  // Default
+  Matchable(){
+    x = 0;
+    y = 0;
+    size = 0;
+    colorID = 0;
+    isClicked = false;
+  }
+  
+  // Copy constructor
+  Matchable(Matchable aMatchable){
+    this(aMatchable.x, aMatchable.y, aMatchable.size, aMatchable.colorID);
+    println("made a copy");
+  }
+  
+  // Paramterized
   Matchable(int x, int y, int size, int c){
     this.x = x;
     this.y = y;
     this.size = size;
+    this.colorID = c;
     
     if (c == 1){
       this.c = color(255, 0, 0);
@@ -126,18 +221,26 @@ class Matchable{
     }
   }
   
-  int getX(){
-    return this.x;
-  }
-  int getY(){
-    return this.y;
-  }
-  void isClicked(){
-    isClicked = true;
+  void toggleClicked(){
+    isClicked = !isClicked;
   }
   
-  void display(){
+  boolean isClicked(){
+    return isClicked;
+  }
+  
+  void display(){ 
+    if(isClicked){
+      strokeWeight(4);
+    }
+    else{
+      strokeWeight(1);
+    }
+    
     fill(c);
     rect(x*size, y*size, size, size);
+    fill(0);
+    text(colorID, x*size+(size/2), y*size+(size/2));
+
   }
 }
