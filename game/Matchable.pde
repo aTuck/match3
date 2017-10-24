@@ -1,5 +1,6 @@
 class Matchable {
-  int x, y, size, colorID, boardPos;
+  int x, y, colorID, boardPos;
+  float size;
   boolean isClicked;
 
   private color c;
@@ -12,11 +13,6 @@ class Matchable {
     colorID = 0;
     boardPos = 0;
     isClicked = false;
-  }
-
-  // Copy constructor
-  Matchable(Matchable aMatchable) {
-    this(aMatchable.x, aMatchable.y, aMatchable.size, aMatchable.colorID);
   }
 
   // Paramterized
