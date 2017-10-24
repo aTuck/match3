@@ -17,7 +17,6 @@ class Matchable {
   // Copy constructor
   Matchable(Matchable aMatchable) {
     this(aMatchable.x, aMatchable.y, aMatchable.size, aMatchable.colorID);
-    println("made a copy");
   }
 
   // Paramterized

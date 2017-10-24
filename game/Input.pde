@@ -11,7 +11,7 @@ void mouseDragged() {
     Matchable m2 = board.lookForMatchable(mouseX, mouseY);
     if (board.isValidSwap(m2)) {
       board.swap(m2);
-      MatchChecker.boardOperation(board);
+      MatchChecker.boardOperation(board, m2);
       hasSwapped = true;
     };
   }
