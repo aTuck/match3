@@ -2,6 +2,7 @@ class Board {
   Matchable[][] board;
   int boardWidth, boardHeight, matchableSize;
   Matchable activeMatchable;
+  boolean hasSwapped = false;
 
   Board(int x, int y, int size) {
     boardWidth = x;
@@ -74,60 +75,28 @@ class Board {
     }
   }
 
-  void swap(Matchable m) {
-    int tx, ty;
+  boolean isValidSwap(Matchable candidateMatchable) {
+    if (candidateMatchable == null ||
+      activeMatchable == null ||
+      candidateMatchable.c == activeMatchable.c) {
+      return false;
+    } else if (activeMatchable.isAdjacent(candidateMatchable)) {
+      return true;
+    }
+    return false;
+  }
 
-    Matchable a = board[m.x][m.y];
-    Matchable b = board[activeMatchable.x][activeMatchable.y];
+  void swap(Matchable candidateMatchable) {
+    activeMatchable.swap(candidateMatchable);
 
-    tx = a.x;
-    a.x = b.x;
-    b.x = tx;
-
-    ty = a.y;
-    a.y = b.y;
-    b.y = ty;
-
-    a.isClicked = false;
-    b.isClicked = false;
-
-    board[a.x][a.y] = a;
-    board[b.x][b.y] = b;
+    updateBoardArrayIndex(activeMatchable);
+    updateBoardArrayIndex(candidateMatchable);
 
     activeMatchable = null;
     display();
   }
 
-  boolean isValidSwap(Matchable m) {
-    if (m == null) {
-      return false;
-    } else if (activeMatchable == null) {
-      return false;
-    } else if (m.c == activeMatchable.c) {
-      return false;
-    } else if (isAdjacent(m)) {
-      return true;
-    }
-    return false;
-  }
-
-  private boolean isAdjacent(Matchable m) {
-    // left -> right swap
-    if (m.x > activeMatchable.x && m.x < (activeMatchable.x + 2)) {
-      return true;
-    }
-    // down -> up swap
-    else if (m.y < activeMatchable.y && m.y > (activeMatchable.y - 2)) {
-      return true;
-    }
-    // right -> left swap
-    else if (m.x < activeMatchable.x && m.x > (activeMatchable.x - 2)) {
-      return true;
-    }
-    // up -> down swap
-    else if (m.y > activeMatchable.y && m.y < (activeMatchable.y + 2)) {
-      return true;
-    }
-    return false;
+  void updateBoardArrayIndex(Matchable matchable) {
+    board[matchable.x][matchable.y] = matchable;
   }
 }
