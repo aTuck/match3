@@ -1,4 +1,6 @@
 class Matchable {
+  final int POINTS = 10;
+  
   int x, y, colorID, boardPos;
   float size;
   boolean isClicked;

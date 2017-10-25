@@ -1,9 +1,9 @@
 class Board {
   Matchable[][] board;
-  int boardWidth, boardHeight, matchableSize;
+  int boardWidth, boardHeight, matchableSize, score;
   Matchable activeMatchable;
   boolean activeHasSwapped = true;
-
+  
   Board(int x, int y, int size) {
     boardWidth = x;
     boardHeight = y;
@@ -15,7 +15,7 @@ class Board {
   void initialize() {
     int thisColor = 0;
     boolean repeats;
-
+  
     for (int i = 0; i < boardWidth; i++) {
       for (int j = 0; j < boardHeight; j++) {
         do {
@@ -48,6 +48,9 @@ class Board {
         board[i][j].display();
       }
     }
+    textFont(f, 16);
+    fill(255);
+    text(""+score, 250, 480); 
   }
 
 
@@ -66,6 +69,12 @@ class Board {
           return;
         }
         else{
+          for (Matchable m : matchChecker.hMatch){
+            score += m.POINTS;
+          }
+          for (Matchable m : matchChecker.vMatch){
+            score += m.POINTS;
+          }
           activeMatchable.toggleOff();
           candidateMatchable.toggleOff();
           
