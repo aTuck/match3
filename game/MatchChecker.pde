@@ -1,62 +1,107 @@
 static class MatchChecker {
-  static void boardOperation(Board board, Matchable m) {
+  static void checkForMatches(Board board, Matchable m) {
     ArrayList<Matchable> hMatch = new ArrayList<Matchable>();
     ArrayList<Matchable> vMatch = new ArrayList<Matchable>();
     Matchable[][] b = board.board;
-    int lastColor, startPos, endPos;
+    int xLastColor, yLastColor, xStartPos, xEndPos, yStartPos, yEndPos;
+    boolean isNewCol;
     
+    // Horizontal index out of bounds prevention
     if (m.x-2 >= 0){
-      startPos = m.x-2;
+      xStartPos = m.x-2;
     }
     else if (m.x-1 >= 0){
-      startPos = m.x-1;
+      xStartPos = m.x-1;
     }
     else{
-      startPos = m.x;
+      xStartPos = m.x;
     }
     
     if (m.x+2 < board.boardWidth){
-      endPos = m.x+2;
+      xEndPos = m.x+2;
     }
     else if (m.x+1 < board.boardWidth){
-      endPos = m.x+1;
+      xEndPos = m.x+1;
     }
     else{
-      endPos = m.x;
+      xEndPos = m.x;
     }
+    
+    // Vertical index out of bounds prevention
+    if (m.y-2 >= 0){
+      yStartPos = m.y-2;
+    }
+    else if (m.y-1 >= 0){
+      yStartPos = m.y-1;
+    }
+    else{
+      yStartPos = m.y;
+    }
+    
+    if (m.y+2 < board.boardHeight){
+      yEndPos = m.y+2;
+    }
+    else if (m.y+1 < board.boardHeight){
+      yEndPos = m.y+1;
+    }
+    else{
+      yEndPos = m.y;
+    }
+    
 
-    lastColor = 0;
-    for (int i = startPos; i <= endPos; i++){
+    xLastColor = 0;
+    yLastColor = 0;
+    // Horizontal matches
+    for (int i = xStartPos; i <= xEndPos; i++){
+      isNewCol = true;
       // First check
-      if (i == startPos){
-        lastColor = b[i][m.y].colorID;
+      if (i == xStartPos){
+        xLastColor = b[i][m.y].colorID;
         hMatch.add(b[i][m.y]);
       }
       // Matches last color
-      else if (b[i][m.y].colorID == lastColor){
+      else if (b[i][m.y].colorID == xLastColor){
         hMatch.add(b[i][m.y]);  
       }
       // Doesn't match
       else{
-        lastColor = b[i][m.y].colorID;
+        xLastColor = b[i][m.y].colorID;
         hMatch.clear();
         hMatch.add(b[i][m.y]);
       }
       if (hMatch.size() >= 3){
-        fallDown(hMatch);
+        fallDown(hMatch, "h");
         break;
       }
-    }
-    
-    //for (int j = m.y-3; j < m.y+2; j++){
-    //  if (board.board[i][j] != null){
-        
-    //  }
+      // Vertical matches
+      for (int j = yStartPos; j <= yEndPos; j++){
+        if (isNewCol){vMatch.clear(); isNewCol = false;}
+        // First check
+        if (j == yStartPos){
+          yLastColor = b[i][j].colorID;
+          vMatch.add(b[i][j]);
+        }
+        // Matches last color
+        else if (b[i][j].colorID == yLastColor){
+          vMatch.add(b[i][j]);  
+        }
+        // Doesn't match
+        else{
+          yLastColor = b[i][j].colorID;
+          vMatch.clear();
+          vMatch.add(b[i][j]);
+        }
+        if (vMatch.size() >= 3){
+          fallDown(vMatch, "v");
+          break;
+        }
+      }
     }
   }
   
-  static void fallDown(ArrayList<Matchable> match){
+  static void fallDown(ArrayList<Matchable> match, String dir){
     for (int i = 0; i < match.size(); i++){
-      println("my match: "+match.get(i).boardPos);
+      println("my "+dir+" match: "+match.get(i).boardPos);
     }
   }
+}

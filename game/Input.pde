@@ -9,7 +9,7 @@ void mouseDragged() {
     Matchable candidateMatchable = board.lookForMatchable(mouseX, mouseY);
     if (board.isValidSwap(candidateMatchable)) {
       board.swap(candidateMatchable);
-      MatchChecker.boardOperation(board);
+      MatchChecker.checkForMatches(board, candidateMatchable);
       board.hasSwapped = true;
     };
   }
