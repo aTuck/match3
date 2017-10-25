@@ -1,5 +1,9 @@
 class MatchChecker {
   Matchable[][] boardArray;
+  final int DOWN = 1;
+  final int RIGHT = 1;
+  final int UP = -1;
+  final int LEFT = -1;
 
   MatchChecker(Board board) {
     boardArray = board.board;
@@ -12,13 +16,18 @@ class MatchChecker {
     //int xLastColor, yLastColor, xStartPos, xEndPos, yStartPos, yEndPos;
     //boolean isNewCol;
 
-    int goRightOrDown = 1;
-    int goLeftOrUp = -1;
+    findHorizontalMatch(m, RIGHT, hMatch);
+    findHorizontalMatch(m, LEFT, hMatch); 
 
-    findHorizontalMatch(m, goRightOrDown, hMatch); //Right
-    findHorizontalMatch(m, goLeftOrUp, hMatch); //Left
+    findVerticalMatch(m, DOWN, vMatch);
+    findVerticalMatch(m, UP, vMatch);
 
+    println("h");
     for (Matchable mm : hMatch) {
+      println(mm.boardPos);
+    }
+    println("v");
+    for (Matchable mm : vMatch) {
       println(mm.boardPos);
     }
     println("\n\n");
@@ -130,8 +139,22 @@ class MatchChecker {
     findHorizontalMatch(m, i, hMatch);
   }
 
-  Matchable getHorzMatchable(Matchable m, int j) {
-    return boardArray[m.x + j][m.y];
+  void findVerticalMatch(Matchable m, int i, ArrayList<Matchable> vMatch) {
+    if (i > 0) { //if going down
+      if (m.y + i >= board.boardHeight) { //check out of bounds
+        return;
+      }
+    } else if (i < 0) { //if going up
+      if (m.y + i < 0) { // check out of bounds
+        return;
+      }
+    }
+    if (boardArray[m.x][m.y + i].colorID != m.colorID) { //check colour
+      return;
+    }
+    m = boardArray[m.x][m.y + i];
+    vMatch.add(m);
+    findVerticalMatch(m, i, vMatch);
   }
 
   void fallDown(ArrayList<Matchable> match, String dir) {
