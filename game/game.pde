@@ -8,7 +8,7 @@ void setup() {
 
   size(500, 500);
   frameRate(FRAMERATE);
-  background(30);
+  
   strokeWeight(1);
 
   board = new Board(BOARD_SIZE, BOARD_SIZE, MATCHABLE_SIZE);
@@ -18,5 +18,6 @@ void setup() {
 }
 
 void draw() {
+  background(30);
   board.display();
 }

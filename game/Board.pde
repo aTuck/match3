@@ -3,6 +3,7 @@ class Board {
   int boardWidth, boardHeight, matchableSize;
   Matchable activeMatchable;
   boolean activeHasSwapped = true;
+  ArrayList<Matchable> matchCheckerQueue = new ArrayList<Matchable>();
 
   Board(int x, int y, int size) {
     boardWidth = x;
@@ -46,7 +47,9 @@ class Board {
   void display() {
     for (int i = 0; i < boardWidth; i++) {
       for (int j = 0; j < boardHeight; j++) {
-        board[i][j].display();
+        if (board[i][j] != null) {
+          board[i][j].display();
+        }
       }
     }
   }
@@ -58,17 +61,42 @@ class Board {
       Matchable candidateMatchable = lookForMatchable(mx, my);
       if (isValidSwap(activeMatchable, candidateMatchable)) {
         swap(activeMatchable, candidateMatchable);
-        
+
         activeMatchable.toggleOff();
         candidateMatchable.toggleOff();
         activeHasSwapped = true;
-        
-        matchChecker.checkForMatches(activeMatchable);
-        matchChecker.checkForMatches(candidateMatchable);
-        
+
+        matchCheckerQueue.add(activeMatchable);
+        //matchCheckerQueue.add(candidateMatchable);
+        handleMatches();
+
         activeMatchable = null;
       };
     }
+  }
+
+  void handleMatches() {
+    Matchable currMatchable;
+    while (matchCheckerQueue.size() > 0) {
+      currMatchable = popMatchableFromQueue();
+      matchChecker.checkForMatches(currMatchable);
+      if (matchChecker.hasMatches()) {
+        matchChecker.deleteMatches();
+        deleteMatchable(currMatchable);
+        //add affected m to queue
+        //move down ()
+      }
+    }
+  }
+
+  void deleteMatchable(Matchable m) {
+    board[m.x][m.y] = null;
+  }
+
+  Matchable popMatchableFromQueue() {
+    Matchable tempMatchable = matchCheckerQueue.get(0);
+    matchCheckerQueue.remove(0);
+    return tempMatchable;
   }
 
   void selectMatchable(int mx, int my) {

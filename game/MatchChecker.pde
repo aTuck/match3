@@ -68,10 +68,22 @@ class MatchChecker {
     findVerticalMatch(m, i);
   }
 
-  boolean isMatches(){
+  boolean hasMatches(){
     if (hMatch.size() >= 2 || vMatch.size() >= 2){
       return true;
     }
     return false;
+  }
+  
+  void deleteMatches() {
+    clearMatchables(hMatch);
+    clearMatchables(vMatch);
+  }
+  
+  void clearMatchables(ArrayList<Matchable> matches) {
+    for(Matchable m : matches) {
+      boardArray[m.x][m.y] = null;
+    }
+    matches.clear();
   }
 }
