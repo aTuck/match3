@@ -1,10 +1,10 @@
 class MatchChecker {
   Matchable[][] boardArray;
-  
+
   MatchChecker(Board board) {
     boardArray = board.board;
   }
-  
+
   void checkForMatches(Matchable m) {
     ArrayList<Matchable> hMatch = new ArrayList<Matchable>();
     ArrayList<Matchable> vMatch = new ArrayList<Matchable>();
@@ -12,26 +12,16 @@ class MatchChecker {
     //int xLastColor, yLastColor, xStartPos, xEndPos, yStartPos, yEndPos;
     //boolean isNewCol;
 
-    //Left
-    int j = -1;
-    Matchable currMatchable = getHorzMatchable(m, j);  
-    while(currMatchable.colorID == m.colorID && (m.x + j) >= 0) {
-      hMatch.add(currMatchable);
-      j--;
-      currMatchable = getHorzMatchable(m, j);
+    int goRightOrDown = 1;
+    int goLeftOrUp = -1;
+
+    findHorizontalMatch(m, goRightOrDown, hMatch); //Right
+    findHorizontalMatch(m, goLeftOrUp, hMatch); //Left
+
+    for (Matchable mm : hMatch) {
+      println(mm.boardPos);
     }
-    //Right
-    j = 1;
-    currMatchable = getHorzMatchable(m, j);  
-    while(currMatchable.colorID == m.colorID && (m.x + j) >= 0) {
-      hMatch.add(currMatchable);
-      j++;
-      currMatchable = getHorzMatchable(m, j);
-    }
-    
-    //for (Matchable mm : hMatch) {
-    //  println(mm.boardPos);
-    //}
+    println("\n\n");
 
 
     //// Horizontal index out of bounds prevention
@@ -121,7 +111,25 @@ class MatchChecker {
     //  }
     //}
   }
-  
+
+  void findHorizontalMatch(Matchable m, int i, ArrayList<Matchable> hMatch) {
+    if (i > 0) { //if going right
+      if (m.x + i >= board.boardWidth) { //check out of bounds
+        return;
+      }
+    } else if (i < 0) { //if going left
+      if (m.x + i < 0) { // check out of bounds
+        return;
+      }
+    }
+    if (boardArray[m.x + i][m.y].colorID != m.colorID) { //check colour
+      return;
+    }
+    m = boardArray[m.x + i][m.y];
+    hMatch.add(m);
+    findHorizontalMatch(m, i, hMatch);
+  }
+
   Matchable getHorzMatchable(Matchable m, int j) {
     return boardArray[m.x + j][m.y];
   }
