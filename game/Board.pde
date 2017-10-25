@@ -64,6 +64,7 @@ class Board {
         activeHasSwapped = true;
         
         matchChecker.checkForMatches(activeMatchable);
+        matchChecker.checkForMatches(candidateMatchable);
         
         activeMatchable = null;
       };
