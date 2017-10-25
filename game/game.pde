@@ -3,7 +3,7 @@ Board board;
 void setup() {
   final float FRAMERATE = 60;
   final int BOARD_SIZE = 9;
-  final int MATCHABLE_SIZE = 20;
+  final int MATCHABLE_SIZE = 50;
 
   size(500, 500);
   frameRate(FRAMERATE);

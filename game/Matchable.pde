@@ -30,8 +30,12 @@ class Matchable {
     }
   }
 
-  void toggleClicked() {
-    isClicked = !isClicked;
+  void toggleOn() {
+    isClicked = true;
+  }
+  
+  void toggleOff() {
+    isClicked = false;
   }
 
   boolean isClicked() {
@@ -50,8 +54,4 @@ class Matchable {
     fill(0);
     text(this.boardPos, x*size+(size/2), y*size+(size/2));
   }
-
-  
-
-  
 }

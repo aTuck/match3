@@ -4,5 +4,5 @@ void mousePressed() {
 
 void mouseDragged() {
   board.attemptSwap(mouseX, mouseY);
-  //MatchChecker.boardOperation(b, candidateMatchable);
+  
 }

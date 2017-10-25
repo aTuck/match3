@@ -39,7 +39,6 @@ class Board {
         } while (repeats);
 
         board[i][j] = new Matchable(i, j, matchableSize, thisColor);
-        board[i][j].display();
       }
     }
   }
@@ -52,25 +51,25 @@ class Board {
     }
   }
 
+  //Matchable Operations
+
   void attemptSwap(int mx, int my) {
     if (!activeHasSwapped) {
       Matchable candidateMatchable = lookForMatchable(mx, my);
       if (isValidSwap(activeMatchable, candidateMatchable)) {
         swap(activeMatchable, candidateMatchable);
-        deselectMatchable(activeMatchable);
-        deselectMatchable(candidateMatchable);
+        activeMatchable.toggleOff();
+        candidateMatchable.toggleOff();
         activeMatchable = null;
         activeHasSwapped = true;
+        MatchChecker.boardOperation(this, candidateMatchable);
       };
     }
   }
 
-  //Matchable Operations
-
   void selectMatchable(int mx, int my) {
     Matchable clickedMatchable = lookForMatchable(mx, my);
     setActiveMatchable(clickedMatchable);
-    activeHasSwapped = false;
   }
 
   Matchable lookForMatchable(int x, int y) {
@@ -86,18 +85,20 @@ class Board {
 
   void setActiveMatchable(Matchable matchable) {
     if (activeMatchable != null) {
-      activeMatchable.toggleClicked();
+      activeMatchable.toggleOff();
     }
     if (matchable != null) {
       activeMatchable = matchable;
-      matchable.toggleClicked();
+      matchable.toggleOn();
+      activeHasSwapped = false;
     }
   }
 
   boolean isValidSwap(Matchable matchable1, Matchable matchable2) {
     if (matchable2 == null || matchable1 == null || matchable2.c == matchable1.c) {
       return false;
-    } else if (isAdjacent(matchable1, matchable2)) {
+    }
+    if (isAdjacent(matchable1, matchable2)) {
       return true;
     }
     return false;
@@ -133,9 +134,5 @@ class Board {
 
   void updateBoardArrayIndex(Matchable matchable) {
     board[matchable.x][matchable.y] = matchable;
-  }
-
-  void deselectMatchable(Matchable matchable) {
-    matchable.isClicked = false;
   }
 }
