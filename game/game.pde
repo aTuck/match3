@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 Board board;
 MatchChecker matchChecker;
 PFont f;
