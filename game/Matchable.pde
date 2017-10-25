@@ -51,31 +51,7 @@ class Matchable {
     text(this.boardPos, x*size+(size/2), y*size+(size/2));
   }
 
-  private boolean isAdjacent(Matchable otherMatchable) {
-    if (otherMatchable.x > this.x && otherMatchable.x < (this.x + 2)) {
-      return true; // left -> right swap
-    } else if (otherMatchable.y < this.y && otherMatchable.y > (this.y - 2)) {
-      return true; // down -> up swap
-    } else if (otherMatchable.x < this.x && otherMatchable.x > (this.x - 2)) {
-      return true; // right -> left swap
-    } else if (otherMatchable.y > this.y && otherMatchable.y < (this.y + 2)) {
-      return true; // up -> down swap
-    }
-    return false;
-  }
+  
 
-  void swap(Matchable otherMatchable) {
-    int tempX, tempY;
-
-    tempX = this.x;
-    this.x = otherMatchable.x;
-    otherMatchable.x = tempX;
-
-    tempY = this.y;
-    this.y = otherMatchable.y;
-    otherMatchable.y = tempY;
-
-    this.isClicked = false;
-    otherMatchable.isClicked = false;
-  }
+  
 }

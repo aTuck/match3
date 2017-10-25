@@ -2,7 +2,7 @@ class Board {
   Matchable[][] board;
   int boardWidth, boardHeight, matchableSize;
   Matchable activeMatchable;
-  boolean hasSwapped = false;
+  boolean activeHasSwapped = true;
 
   Board(int x, int y, int size) {
     boardWidth = x;
@@ -52,7 +52,26 @@ class Board {
     }
   }
 
+  void attemptSwap(int mx, int my) {
+    if (!activeHasSwapped) {
+      Matchable candidateMatchable = lookForMatchable(mx, my);
+      if (isValidSwap(activeMatchable, candidateMatchable)) {
+        swap(activeMatchable, candidateMatchable);
+        deselectMatchable(activeMatchable);
+        deselectMatchable(candidateMatchable);
+        activeMatchable = null;
+        activeHasSwapped = true;
+      };
+    }
+  }
+
   //Matchable Operations
+
+  void selectMatchable(int mx, int my) {
+    Matchable clickedMatchable = lookForMatchable(mx, my);
+    setActiveMatchable(clickedMatchable);
+    activeHasSwapped = false;
+  }
 
   Matchable lookForMatchable(int x, int y) {
     for (int i = 0; i < boardWidth; i++) {
@@ -75,28 +94,48 @@ class Board {
     }
   }
 
-  boolean isValidSwap(Matchable candidateMatchable) {
-    if (candidateMatchable == null ||
-      activeMatchable == null ||
-      candidateMatchable.c == activeMatchable.c) {
+  boolean isValidSwap(Matchable matchable1, Matchable matchable2) {
+    if (matchable2 == null || matchable1 == null || matchable2.c == matchable1.c) {
       return false;
-    } else if (activeMatchable.isAdjacent(candidateMatchable)) {
+    } else if (isAdjacent(matchable1, matchable2)) {
       return true;
     }
     return false;
   }
 
-  void swap(Matchable candidateMatchable) {
-    activeMatchable.swap(candidateMatchable);
+  boolean isAdjacent(Matchable matchable1, Matchable matchable2) {
+    if (matchable1.x > matchable2.x && matchable1.x < (matchable2.x + 2)) {
+      return true; // left -> right swap
+    } else if (matchable1.y < matchable2.y && matchable1.y > (matchable2.y - 2)) {
+      return true; // down -> up swap
+    } else if (matchable1.x < matchable2.x && matchable1.x > (matchable2.x - 2)) {
+      return true; // right -> left swap
+    } else if (matchable1.y > matchable2.y && matchable1.y < (matchable2.y + 2)) {
+      return true; // up -> down swap
+    }
+    return false;
+  }
 
-    updateBoardArrayIndex(activeMatchable);
-    updateBoardArrayIndex(candidateMatchable);
+  void swap(Matchable matchable1, Matchable matchable2) {
+    int tempX, tempY;
 
-    activeMatchable = null;
-    display();
+    tempX = matchable1.x;
+    matchable1.x = matchable2.x;
+    matchable2.x = tempX;
+
+    tempY = matchable1.y;
+    matchable1.y = matchable2.y;
+    matchable2.y = tempY;
+
+    updateBoardArrayIndex(matchable1);
+    updateBoardArrayIndex(matchable2);
   }
 
   void updateBoardArrayIndex(Matchable matchable) {
     board[matchable.x][matchable.y] = matchable;
+  }
+
+  void deselectMatchable(Matchable matchable) {
+    matchable.isClicked = false;
   }
 }
