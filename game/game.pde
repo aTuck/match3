@@ -1,16 +1,16 @@
 Board board;
 
 void setup() {
-  final float framerate = 60;
-  final int boardSize = 9;
-  final int matchableSize = 50;
+  final float FRAMERATE = 60;
+  final int BOARD_SIZE = 9;
+  final int MATCHABLE_SIZE = 50;
 
   size(500, 500);
-  frameRate(framerate);
+  frameRate(FRAMERATE);
   background(30);
   strokeWeight(1);
 
-  board = new Board(boardSize, boardSize, matchableSize);
+  board = new Board(BOARD_SIZE, BOARD_SIZE, MATCHABLE_SIZE);
   board.initialize();
 }
 

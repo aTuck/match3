@@ -2,7 +2,7 @@ class Board {
   Matchable[][] board;
   int boardWidth, boardHeight, matchableSize;
   Matchable activeMatchable;
-  boolean hasSwapped = false;
+  boolean activeHasSwapped = true;
 
   Board(int x, int y, int size) {
     boardWidth = x;
@@ -39,7 +39,6 @@ class Board {
         } while (repeats);
 
         board[i][j] = new Matchable(i, j, matchableSize, thisColor);
-        board[i][j].display();
       }
     }
   }
@@ -54,6 +53,25 @@ class Board {
 
   //Matchable Operations
 
+  void attemptSwap(int mx, int my) {
+    if (!activeHasSwapped) {
+      Matchable candidateMatchable = lookForMatchable(mx, my);
+      if (isValidSwap(activeMatchable, candidateMatchable)) {
+        swap(activeMatchable, candidateMatchable);
+        activeMatchable.toggleOff();
+        candidateMatchable.toggleOff();
+        activeMatchable = null;
+        activeHasSwapped = true;
+        MatchChecker.boardOperation(this, candidateMatchable);
+      };
+    }
+  }
+
+  void selectMatchable(int mx, int my) {
+    Matchable clickedMatchable = lookForMatchable(mx, my);
+    setActiveMatchable(clickedMatchable);
+  }
+
   Matchable lookForMatchable(int x, int y) {
     for (int i = 0; i < boardWidth; i++) {
       for (int j = 0; j < boardHeight; j++) {
@@ -67,33 +85,51 @@ class Board {
 
   void setActiveMatchable(Matchable matchable) {
     if (activeMatchable != null) {
-      activeMatchable.toggleClicked();
+      activeMatchable.toggleOff();
     }
     if (matchable != null) {
       activeMatchable = matchable;
-      matchable.toggleClicked();
+      matchable.toggleOn();
+      activeHasSwapped = false;
     }
   }
 
-  boolean isValidSwap(Matchable candidateMatchable) {
-    if (candidateMatchable == null ||
-      activeMatchable == null ||
-      candidateMatchable.c == activeMatchable.c) {
+  boolean isValidSwap(Matchable matchable1, Matchable matchable2) {
+    if (matchable2 == null || matchable1 == null || matchable2.c == matchable1.c) {
       return false;
-    } else if (activeMatchable.isAdjacent(candidateMatchable)) {
+    }
+    if (isAdjacent(matchable1, matchable2)) {
       return true;
     }
     return false;
   }
 
-  void swap(Matchable candidateMatchable) {
-    activeMatchable.swap(candidateMatchable);
+  boolean isAdjacent(Matchable matchable1, Matchable matchable2) {
+    if (matchable1.x > matchable2.x && matchable1.x < (matchable2.x + 2)) {
+      return true; // left -> right swap
+    } else if (matchable1.y < matchable2.y && matchable1.y > (matchable2.y - 2)) {
+      return true; // down -> up swap
+    } else if (matchable1.x < matchable2.x && matchable1.x > (matchable2.x - 2)) {
+      return true; // right -> left swap
+    } else if (matchable1.y > matchable2.y && matchable1.y < (matchable2.y + 2)) {
+      return true; // up -> down swap
+    }
+    return false;
+  }
 
-    updateBoardArrayIndex(activeMatchable);
-    updateBoardArrayIndex(candidateMatchable);
+  void swap(Matchable matchable1, Matchable matchable2) {
+    int tempX, tempY;
 
-    activeMatchable = null;
-    display();
+    tempX = matchable1.x;
+    matchable1.x = matchable2.x;
+    matchable2.x = tempX;
+
+    tempY = matchable1.y;
+    matchable1.y = matchable2.y;
+    matchable2.y = tempY;
+
+    updateBoardArrayIndex(matchable1);
+    updateBoardArrayIndex(matchable2);
   }
 
   void updateBoardArrayIndex(Matchable matchable) {
