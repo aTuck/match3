@@ -1,4 +1,5 @@
 Board board;
+MatchChecker matchChecker;
 
 void setup() {
   final float FRAMERATE = 60;
@@ -12,6 +13,8 @@ void setup() {
 
   board = new Board(BOARD_SIZE, BOARD_SIZE, MATCHABLE_SIZE);
   board.initialize();
+  
+  matchChecker = new MatchChecker(board);
 }
 
 void draw() {

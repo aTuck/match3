@@ -58,11 +58,14 @@ class Board {
       Matchable candidateMatchable = lookForMatchable(mx, my);
       if (isValidSwap(activeMatchable, candidateMatchable)) {
         swap(activeMatchable, candidateMatchable);
+        
         activeMatchable.toggleOff();
         candidateMatchable.toggleOff();
-        activeMatchable = null;
         activeHasSwapped = true;
-        MatchChecker.boardOperation(this, candidateMatchable);
+        
+        matchChecker.checkForMatches(activeMatchable);
+        
+        activeMatchable = null;
       };
     }
   }
