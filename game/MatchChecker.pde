@@ -11,7 +11,7 @@ class MatchChecker {
     boardArray = board.board;
   }
 
-  void checkForMatches(Matchable m) {
+  boolean checkForMatches(Matchable m) {
     hMatch.clear();
     vMatch.clear();
     
@@ -21,15 +21,10 @@ class MatchChecker {
     findVerticalMatch(m, UP); //!important: up before down
     findVerticalMatch(m, DOWN);
 
-    println("h");
-    for (Matchable mm : hMatch) {
-      println(mm.boardPos);
+    if (hMatch.size() >= 2 || vMatch.size() >= 2){
+      return true;
     }
-    println("v");
-    for (Matchable mm : vMatch) {
-      println(mm.boardPos);
-    }
-    println();
+    return false;
   }
 
   void findHorizontalMatch(Matchable m, int i) {

@@ -1,10 +1,10 @@
 class Board {
   Matchable[][] board;
-  int boardWidth, boardHeight, matchableSize;
+  int boardWidth, boardHeight, matchableSize, score;
   Matchable activeMatchable;
   boolean activeHasSwapped = true;
   ArrayList<Matchable> matchCheckerQueue = new ArrayList<Matchable>();
-
+  
   Board(int x, int y, int size) {
     boardWidth = x;
     boardHeight = y;
@@ -13,11 +13,10 @@ class Board {
   }
 
   //Board Operations
-
   void initialize() {
     int thisColor = 0;
     boolean repeats;
-
+  
     for (int i = 0; i < boardWidth; i++) {
       for (int j = 0; j < boardHeight; j++) {
         do {
@@ -52,25 +51,44 @@ class Board {
         }
       }
     }
+    textFont(f, 16);
+    fill(255);
+    text(""+score, 250, 480); 
   }
 
-  //Matchable Operations
 
+  //Matchable Operations
   void attemptSwap(int mx, int my) {
     if (!activeHasSwapped) {
       Matchable candidateMatchable = lookForMatchable(mx, my);
       if (isValidSwap(activeMatchable, candidateMatchable)) {
+        boolean isMatches;
+        
         swap(activeMatchable, candidateMatchable);
-
-        activeMatchable.toggleOff();
-        candidateMatchable.toggleOff();
-        activeHasSwapped = true;
-
-        matchCheckerQueue.add(activeMatchable);
+        isMatches = (matchChecker.checkForMatches(activeMatchable) || matchChecker.checkForMatches(candidateMatchable));
+        
+        if (!isMatches){
+          swap(activeMatchable, candidateMatchable);
+          return;
+        }
+        else{
+          for (Matchable m : matchChecker.hMatch){
+            score += m.POINTS;
+          }
+          for (Matchable m : matchChecker.vMatch){
+            score += m.POINTS;
+          }
+          activeMatchable.toggleOff();
+          candidateMatchable.toggleOff();
+          
+          activeHasSwapped = true;
+          
+          matchCheckerQueue.add(activeMatchable);
         //matchCheckerQueue.add(candidateMatchable);
         handleMatches();
-
-        activeMatchable = null;
+        
+          activeMatchable = null;
+        }
       };
     }
   }
@@ -149,13 +167,13 @@ class Board {
   }
 
   boolean isAdjacent(Matchable matchable1, Matchable matchable2) {
-    if (matchable1.x > matchable2.x && matchable1.x < (matchable2.x + 2)) {
+    if (matchable1.x > matchable2.x && matchable1.x < (matchable2.x + 2) && matchable1.y == matchable2.y) {
       return true; // left -> right swap
-    } else if (matchable1.y < matchable2.y && matchable1.y > (matchable2.y - 2)) {
+    } else if (matchable1.y < matchable2.y && matchable1.y > (matchable2.y - 2) && matchable1.x == matchable2.x) {
       return true; // down -> up swap
-    } else if (matchable1.x < matchable2.x && matchable1.x > (matchable2.x - 2)) {
+    } else if (matchable1.x < matchable2.x && matchable1.x > (matchable2.x - 2) && matchable1.y == matchable2.y) {
       return true; // right -> left swap
-    } else if (matchable1.y > matchable2.y && matchable1.y < (matchable2.y + 2)) {
+    } else if (matchable1.y > matchable2.y && matchable1.y < (matchable2.y + 2) && matchable1.x == matchable2.x) {
       return true; // up -> down swap
     }
     return false;
