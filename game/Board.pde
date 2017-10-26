@@ -81,12 +81,24 @@ class Board {
       currMatchable = popMatchableFromQueue();
       matchChecker.checkForMatches(currMatchable);
       if (matchChecker.hasMatches()) {
+        
+        //kinda works maybe
+        //matchChecker.queueAffectedMatchables(currMatchable);
+        
         matchChecker.deleteMatches();
         deleteMatchable(currMatchable);
-        //add affected m to queue
-        //move down ()
+        
+        //TODO: move down ()
+        
       }
     }
+  }
+  
+  void queueAffectedMatchable(Matchable matchable) {
+    for (int i = 0; i < matchable.y; i++) {
+      matchCheckerQueue.add(board[matchable.x][i]);
+    }
+    
   }
 
   void deleteMatchable(Matchable m) {

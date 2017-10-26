@@ -18,8 +18,8 @@ class MatchChecker {
     findHorizontalMatch(m, RIGHT);
     findHorizontalMatch(m, LEFT); 
 
+    findVerticalMatch(m, UP); //!important: up before down
     findVerticalMatch(m, DOWN);
-    findVerticalMatch(m, UP);
 
     println("h");
     for (Matchable mm : hMatch) {
@@ -82,8 +82,19 @@ class MatchChecker {
   
   void clearMatchables(ArrayList<Matchable> matches) {
     for(Matchable m : matches) {
-      boardArray[m.x][m.y] = null;
+      board.deleteMatchable(m);
     }
     matches.clear();
+  }
+  
+    
+  void queueAffectedMatchables(Matchable currMatchable) {
+    board.queueAffectedMatchable(currMatchable);
+    for(Matchable m : hMatch) {
+      board.queueAffectedMatchable(m);
+    }
+    if (!vMatch.isEmpty() && currMatchable.y > vMatch.get(0).y) { //curr is not highest
+      board.queueAffectedMatchable(vMatch.get(0));
+    }
   }
 }
