@@ -6,9 +6,9 @@ class MatchChecker {
   final int LEFT = -1;
   private ArrayList<Matchable> hMatch = new ArrayList<Matchable>();
   private ArrayList<Matchable> vMatch = new ArrayList<Matchable>();
-  
-  ArrayList<Matchable> matchSet = new ArrayList<Matchable>();
-  
+
+  ArrayList<Matchable> matchSet;
+
   MatchChecker(Board board) {
     boardArray = board.board;
   }
@@ -16,14 +16,13 @@ class MatchChecker {
   boolean checkForMatches(Matchable m) {
     hMatch.clear();
     vMatch.clear();
-    
-    findHorizontalMatch(m, RIGHT);
-    findHorizontalMatch(m, LEFT); 
 
+    findHorizontalMatch(m, RIGHT);
     findVerticalMatch(m, UP); //!important: up before down
+    findHorizontalMatch(m, LEFT);
     findVerticalMatch(m, DOWN);
-  
-    if (hMatch.size() >= 2 || vMatch.size() >= 2){
+
+    if (hMatch.size() >= 2 || vMatch.size() >= 2) {
       mergeIntoMatchSet(m);
       return true;
     }
@@ -65,25 +64,34 @@ class MatchChecker {
     vMatch.add(m);
     findVerticalMatch(m, i);
   }
-  
-  void mergeIntoMatchSet(Matchable m){
+
+  void mergeIntoMatchSet(Matchable m) {
+    matchSet= new ArrayList<Matchable>();
+    for (Matchable mm : hMatch) {
+      println("hMatch: " + mm.boardPos);
+    }
+    for (Matchable mm : vMatch) {
+      println("vMatch: " + mm.boardPos);
+    }
     // Both vertical and horizontal matches
-    if (hMatch.size() >= 2 && vMatch.size() >= 2){
+    if (hMatch.size() >= 2 && vMatch.size() >= 2) {
       matchSet.add(m);
-      for (Matchable mm : hMatch){
+      for (Matchable mm : hMatch) {
+        println("Merging: " + mm.boardPos);
         matchSet.add(mm);
       }
-      for (Matchable mm : vMatch){
+      for (Matchable mm : vMatch) {
+        println("Merging: " + mm.boardPos);
         matchSet.add(mm);
       }
     }
     // Just horizontal
-    else if (hMatch.size() >= 2 && vMatch.size() < 2){
+    else if (hMatch.size() >= 2 && vMatch.size() < 2) {
       hMatch.add(m);
       matchSet = hMatch;
     }
     // Just vertical
-    if (vMatch.size() >= 2 && hMatch.size() < 2){
+    if (vMatch.size() >= 2 && hMatch.size() < 2) {
       vMatch.add(m);
       matchSet = vMatch;
     }

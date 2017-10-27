@@ -29,7 +29,7 @@ class Matchable {
     } else if (colorID == 6) {
       return Color.decode("0x6c5b7b");
     } else {
-      return Color.decode("0xffffff");
+      return Color.decode("0xeeeeee");
     }
   }
   
@@ -53,8 +53,8 @@ class Matchable {
     }
 
     fill(c.getRGB());
-    rect(x*size, y*size, size, size);
-    fill(0);
-    text(this.boardPos, x*size+(size/2), y*size+(size/2));
+    rect(size*x, size*y, size, size);
+    //fill(0);
+    //text(this.boardPos, x*size+(size/2), y*size+(size/2));
   }
 }

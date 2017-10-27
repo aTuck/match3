@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 Board board;
 MatchChecker matchChecker;
 PFont f;
+int lastTime = 0;
 
 void setup() {
   final float FRAMERATE = 60;
@@ -27,4 +28,11 @@ void setup() {
 void draw() {
   background(30);
   board.display();
+  int currentTime = millis();
+
+  if (currentTime > lastTime+100) {
+    
+    lastTime = currentTime;
+  }
+  
 }
