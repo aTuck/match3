@@ -4,8 +4,10 @@ class MatchChecker {
   final int RIGHT = 1;
   final int UP = -1;
   final int LEFT = -1;
-  ArrayList<Matchable> hMatch = new ArrayList<Matchable>();
-  ArrayList<Matchable> vMatch = new ArrayList<Matchable>();
+  private ArrayList<Matchable> hMatch = new ArrayList<Matchable>();
+  private ArrayList<Matchable> vMatch = new ArrayList<Matchable>();
+  
+  ArrayList<Matchable> matchSet = new ArrayList<Matchable>();
   
   MatchChecker(Board board) {
     boardArray = board.board;
@@ -21,8 +23,8 @@ class MatchChecker {
     findVerticalMatch(m, UP); //!important: up before down
     findVerticalMatch(m, DOWN);
   
-    hMatch.add(m);
-    if (hMatch.size() >= 3 || vMatch.size() >= 2){
+    if (hMatch.size() >= 2 || vMatch.size() >= 2){
+      mergeIntoMatchSet(m);
       return true;
     }
     return false;
@@ -62,5 +64,28 @@ class MatchChecker {
     m = boardArray[m.x][m.y + i];
     vMatch.add(m);
     findVerticalMatch(m, i);
+  }
+  
+  void mergeIntoMatchSet(Matchable m){
+    // Both vertical and horizontal matches
+    if (hMatch.size() >= 2 && vMatch.size() >= 2){
+      matchSet.add(m);
+      for (Matchable mm : hMatch){
+        matchSet.add(mm);
+      }
+      for (Matchable mm : vMatch){
+        matchSet.add(mm);
+      }
+    }
+    // Just horizontal
+    else if (hMatch.size() >= 2 && vMatch.size() < 2){
+      hMatch.add(m);
+      matchSet = hMatch;
+    }
+    // Just vertical
+    if (vMatch.size() >= 2 && hMatch.size() < 2){
+      vMatch.add(m);
+      matchSet = vMatch;
+    }
   }
 }

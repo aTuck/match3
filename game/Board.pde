@@ -80,17 +80,22 @@ class Board {
           activeHasSwapped = true;
           activeMatchable = null;
         }
-      };
+      }
+      if (matchCheckerQueue.size() > 0){
+        for (Matchable m : matchCheckerQueue){
+          println("checking from queue for "+m);
+          checkAndClearMatches(m);
+        }
+        matchCheckerQueue.clear();
+      }
     }
   }
   
   void checkAndClearMatches(Matchable m){
+    println("checking matches for "+m);
     if(matchChecker.checkForMatches(m)){
-      for (Matchable mm : matchChecker.hMatch){
-        score += mm.POINTS;
-        pullDown(board[mm.x][mm.y]);
-      }
-      for (Matchable mm : matchChecker.vMatch){
+      for (Matchable mm : matchChecker.matchSet){
+        println("adding and pulling down from "+mm);
         score += mm.POINTS;
         pullDown(board[mm.x][mm.y]);
       }
@@ -167,9 +172,13 @@ class Board {
   }
 
   void pullDown(Matchable m){
+    if (m == null){
+      return;
+    }
     if (m.y-1 < 0 || board[m.x][m.y] == null){
       board[m.x][m.y] = new Matchable(m.x, m.y, matchableSize, (int)random(7));
-      //checkAndClearMatches(board[m.x][m.y]);
+      //matchCheckerQueue.add(board[m.x][m.y]);
+      return;
     }
     else{
       Matchable aboveMatchable;
