@@ -20,8 +20,9 @@ class MatchChecker {
 
     findVerticalMatch(m, UP); //!important: up before down
     findVerticalMatch(m, DOWN);
-
-    if (hMatch.size() >= 2 || vMatch.size() >= 2){
+  
+    hMatch.add(m);
+    if (hMatch.size() >= 3 || vMatch.size() >= 2){
       return true;
     }
     return false;
@@ -61,35 +62,5 @@ class MatchChecker {
     m = boardArray[m.x][m.y + i];
     vMatch.add(m);
     findVerticalMatch(m, i);
-  }
-
-  boolean hasMatches(){
-    if (hMatch.size() >= 2 || vMatch.size() >= 2){
-      return true;
-    }
-    return false;
-  }
-  
-  void deleteMatches() {
-    clearMatchables(hMatch);
-    clearMatchables(vMatch);
-  }
-  
-  void clearMatchables(ArrayList<Matchable> matches) {
-    for(Matchable m : matches) {
-      board.deleteMatchable(m);
-    }
-    matches.clear();
-  }
-  
-    
-  void queueAffectedMatchables(Matchable currMatchable) {
-    board.queueAffectedMatchable(currMatchable);
-    for(Matchable m : hMatch) {
-      board.queueAffectedMatchable(m);
-    }
-    if (!vMatch.isEmpty() && currMatchable.y > vMatch.get(0).y) { //curr is not highest
-      board.queueAffectedMatchable(vMatch.get(0));
-    }
   }
 }

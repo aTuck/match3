@@ -32,7 +32,11 @@ class Matchable {
       return Color.decode("0xffffff");
     }
   }
-
+  
+  boolean isClicked() {
+    return isClicked;
+  }
+  
   void toggleOn() {
     isClicked = true;
   }
@@ -40,11 +44,7 @@ class Matchable {
   void toggleOff() {
     isClicked = false;
   }
-
-  boolean isClicked() {
-    return isClicked;
-  }
-
+  
   void display() { 
     if (isClicked) {
       strokeWeight(4);

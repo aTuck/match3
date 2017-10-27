@@ -72,63 +72,31 @@ class Board {
           return;
         }
         else{
-          for (Matchable m : matchChecker.hMatch){
-            score += m.POINTS;
-          }
-          for (Matchable m : matchChecker.vMatch){
-            score += m.POINTS;
-          }
+          checkAndClearMatches(activeMatchable);
+          checkAndClearMatches(candidateMatchable);
+          
           activeMatchable.toggleOff();
           candidateMatchable.toggleOff();
-          
           activeHasSwapped = true;
-          
-          matchCheckerQueue.add(activeMatchable);
-        //matchCheckerQueue.add(candidateMatchable);
-        handleMatches();
-        
           activeMatchable = null;
         }
       };
     }
   }
-
-  void handleMatches() {
-    Matchable currMatchable;
-    while (matchCheckerQueue.size() > 0) {
-      currMatchable = popMatchableFromQueue();
-      matchChecker.checkForMatches(currMatchable);
-      if (matchChecker.hasMatches()) {
-        
-        //kinda works maybe
-        //matchChecker.queueAffectedMatchables(currMatchable);
-        
-        matchChecker.deleteMatches();
-        deleteMatchable(currMatchable);
-        
-        //TODO: move down ()
-        
+  
+  void checkAndClearMatches(Matchable m){
+    if(matchChecker.checkForMatches(m)){
+      for (Matchable mm : matchChecker.hMatch){
+        score += mm.POINTS;
+        pullDown(board[mm.x][mm.y]);
+      }
+      for (Matchable mm : matchChecker.vMatch){
+        score += mm.POINTS;
+        pullDown(board[mm.x][mm.y]);
       }
     }
   }
   
-  void queueAffectedMatchable(Matchable matchable) {
-    for (int i = 0; i < matchable.y; i++) {
-      matchCheckerQueue.add(board[matchable.x][i]);
-    }
-    
-  }
-
-  void deleteMatchable(Matchable m) {
-    board[m.x][m.y] = null;
-  }
-
-  Matchable popMatchableFromQueue() {
-    Matchable tempMatchable = matchCheckerQueue.get(0);
-    matchCheckerQueue.remove(0);
-    return tempMatchable;
-  }
-
   void selectMatchable(int mx, int my) {
     Matchable clickedMatchable = lookForMatchable(mx, my);
     setActiveMatchable(clickedMatchable);
@@ -178,6 +146,10 @@ class Board {
     }
     return false;
   }
+  
+  void updateBoardArrayIndex(Matchable matchable) {
+    board[matchable.x][matchable.y] = matchable;
+  }
 
   void swap(Matchable matchable1, Matchable matchable2) {
     int tempX, tempY;
@@ -194,7 +166,18 @@ class Board {
     updateBoardArrayIndex(matchable2);
   }
 
-  void updateBoardArrayIndex(Matchable matchable) {
-    board[matchable.x][matchable.y] = matchable;
+  void pullDown(Matchable m){
+    if (m.y-1 < 0 || board[m.x][m.y] == null){
+      board[m.x][m.y] = new Matchable(m.x, m.y, matchableSize, (int)random(7));
+      //checkAndClearMatches(board[m.x][m.y]);
+    }
+    else{
+      Matchable aboveMatchable;
+      aboveMatchable = board[m.x][m.y-1];
+      pullDown(aboveMatchable);
+      
+      aboveMatchable.y++;
+      updateBoardArrayIndex(aboveMatchable);
+    }
   }
 }
