@@ -7,6 +7,7 @@ class MatchChecker {
   private ArrayList<Matchable> hMatch = new ArrayList<Matchable>();
   private ArrayList<Matchable> vMatch = new ArrayList<Matchable>();
 
+  Matchable willBePowerup;
   ArrayList<Matchable> matchSet;
 
   MatchChecker(Board board) {
@@ -73,6 +74,7 @@ class MatchChecker {
     for (Matchable mm : vMatch) {
       println("vMatch: " + mm.boardPos);
     }
+    willBePowerup = m;
     // Both vertical and horizontal matches
     if (hMatch.size() >= 2 && vMatch.size() >= 2) {
       matchSet.add(m);

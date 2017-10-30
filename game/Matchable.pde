@@ -2,17 +2,20 @@ class Matchable {
   final int POINTS = 10;
   
   int x, y, colorID, boardPos;
-  float size;
-  boolean isClicked;
+  float size, pixelX, pixelY;
+  boolean isClicked, isPowerup4, isPowerup5, isExploding;
   private Color c;
 
   Matchable(int x, int y, int size, int colorID) {
     this.x = x;
     this.y = y;
+    this.pixelX = x;
+    this.pixelY = y;
     this.size = size;
     this.colorID = colorID;
+    this.isPowerup4 = false;
+    this.isPowerup5 = false;
     c = getColorFromID(colorID);
-    boardPos = (y*board.boardWidth) + x; //delete later
   }
 
   Color getColorFromID(int colorID) {
@@ -45,6 +48,23 @@ class Matchable {
     isClicked = false;
   }
   
+  void turnIntoPowerup(int lv){
+    if (lv == 4){
+      isPowerup4 = true;
+    }
+    else if (lv >= 5){
+      isPowerup5 = true;
+    }
+  }
+  
+  void setPos(){
+    boardPos = this.y+1;
+  }
+  
+  void explode(){
+    isExploding = true;
+  }
+  
   void display() { 
     if (isClicked) {
       strokeWeight(4);
@@ -53,8 +73,16 @@ class Matchable {
     }
 
     fill(c.getRGB());
-    rect(size*x, size*y, size, size);
-    //fill(0);
-    //text(this.boardPos, x*size+(size/2), y*size+(size/2));
+    rect(size*pixelX, size*pixelY, size, size);
+    if (isPowerup4){
+      fill(0);
+      rect((size*pixelX)+10, (size*pixelY)+10, size-20, size-20);
+    }
+    if (isPowerup5){
+      fill(0);
+      rect((size*pixelX)+10, (size*pixelY)+10, size-20, size-20);
+      fill(255);
+      rect((size*pixelX)+15, (size*pixelY)+15, size-30, size-30);
+    }
   }
 }

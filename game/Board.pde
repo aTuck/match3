@@ -4,9 +4,11 @@ class Board {
   Matchable activeMatchable;
   boolean activeHasSwapped = true;
   ArrayList<Matchable> matchCheckerQueue = new ArrayList<Matchable>();
+  ArrayList<Matchable> animatingQueue = new ArrayList<Matchable>();
 
+  final private float SPEED = 0.05;
   int counter = 0;
-
+  
   Board(int x, int y, int size) {
     boardWidth = x;
     boardHeight = y;
@@ -87,29 +89,40 @@ class Board {
         }
       }
       while (matchCheckerQueue.size() > 0) {
-        Matchable m = popMatchableFromQueue();
+        Matchable m = popMatchableFromQueue(matchCheckerQueue);
         println("Checking from queue for: "+ m);
         checkAndClearMatches(m);
       }
     }
   }
   
-  Matchable popMatchableFromQueue() {
-    Matchable tempMatchable = matchCheckerQueue.get(0);
-    matchCheckerQueue.remove(0);
+  Matchable popMatchableFromQueue(ArrayList<Matchable> q) {
+    Matchable tempMatchable = q.get(0);
+    q.remove(0);
     return tempMatchable;
   }
   
   void checkAndClearMatches(Matchable m) {
     println("Checking matches for: "+m);
     if (matchChecker.checkForMatches(m)) {
+      if (matchChecker.matchSet.size() >= 4){
+        makePowerup(matchChecker.willBePowerup);
+      }
       for (Matchable mm : matchChecker.matchSet) {
+
         println("Pulling down from: "+mm);
         score += mm.POINTS;
+        mm.explode();
         pullDown(board[mm.x][mm.y]);
       }
     }
     println("...done checkAndclear()");
+  }
+  
+  void makePowerup(Matchable m){
+    int powerLevel = matchChecker.matchSet.size();
+    matchChecker.matchSet.remove(m);
+    m.turnIntoPowerup(powerLevel);
   }
   
   void selectMatchable(int mx, int my) {
@@ -171,14 +184,37 @@ class Board {
   
     tempX = matchable1.x;
     matchable1.x = matchable2.x;
+    matchable1.pixelX = matchable2.x;
     matchable2.x = tempX;
+    matchable2.pixelX = tempX;
   
     tempY = matchable1.y;
     matchable1.y = matchable2.y;
+    matchable1.pixelY = matchable2.pixelY;
     matchable2.y = tempY;
+    matchable2.pixelY = tempY;
   
     updateBoardArrayIndex(matchable1);
     updateBoardArrayIndex(matchable2);
+  }
+  
+  void animateMatchables(){
+    ArrayList<Matchable> temp = new ArrayList<Matchable>();
+    
+    if (animatingQueue.size() > 0){
+      for (Matchable m : animatingQueue){
+        m.pixelY += SPEED;
+        if (m.pixelY >= m.boardPos){
+          m.pixelY = m.boardPos;
+          temp.add(m);
+        }
+      }
+    }
+    if (temp.size() > 0 ){
+      for (Matchable m : temp){
+        animatingQueue.remove(m);
+      }
+    }
   }
   
   void pullDown(Matchable m) {
@@ -191,14 +227,19 @@ class Board {
       board[m.x][m.y] = temp;
       println("Created new matchable: " + temp);
       matchCheckerQueue.add(temp);
+      animatingQueue.add(temp);
       return;
     } else {
+      
       Matchable aboveMatchable;
       aboveMatchable = board[m.x][m.y-1];
       matchCheckerQueue.add(aboveMatchable);
+      aboveMatchable.setPos();
+      animatingQueue.add(aboveMatchable);
+
       pullDown(aboveMatchable);
-  
-      aboveMatchable.y++;
+
+      aboveMatchable.y = aboveMatchable.boardPos;
       updateBoardArrayIndex(aboveMatchable);
     }
   }

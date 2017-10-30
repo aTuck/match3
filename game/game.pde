@@ -28,11 +28,5 @@ void setup() {
 void draw() {
   background(30);
   board.display();
-  int currentTime = millis();
-
-  if (currentTime > lastTime+100) {
-    
-    lastTime = currentTime;
-  }
-  
+  board.animateMatchables();
 }
