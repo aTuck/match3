@@ -68,12 +68,12 @@ class MatchChecker {
 
   void mergeIntoMatchSet(Matchable m) {
     matchSet= new ArrayList<Matchable>();
-    for (Matchable mm : hMatch) {
-      println("hMatch: " + mm.boardPos);
-    }
-    for (Matchable mm : vMatch) {
-      println("vMatch: " + mm.boardPos);
-    }
+    //for (Matchable mm : hMatch) {
+    //  println("hMatch: " + mm.boardPos);
+    //}
+    //for (Matchable mm : vMatch) {
+    //  println("vMatch: " + mm.boardPos);
+    //}
     willBePowerup = m;
     // Both vertical and horizontal matches
     if (hMatch.size() >= 2 && vMatch.size() >= 2) {
@@ -97,5 +97,35 @@ class MatchChecker {
       vMatch.add(m);
       matchSet = vMatch;
     }
+    if (matchSet.size() >= 4){
+      makePowerup(m);
+    }
+    
+    // Clear a whole row
+    if (m.isPowerup4){
+      println("ROW CLEAR!");
+      matchSet.clear();
+      for (int y = 0; y < board.boardWidth; y++){
+        matchSet.add(board.board[m.x][y]);
+      }
+    }
+    // Clear all of one color
+    else if (m.isPowerup5){
+      println ("COLOR CLEAR!");
+      matchSet.clear();
+      for (int i = 0; i < board.boardWidth; i++) {
+        for (int j = 0; j < board.boardHeight; j++) {
+          if (board.board[i][j].colorID == m.colorID){
+            matchSet.add(board.board[i][j]);
+          }
+        }
+      }
+    } 
+  }
+  
+  void makePowerup(Matchable m){
+    int powerLevel = matchSet.size();
+    matchChecker.matchSet.remove(m);
+    m.turnIntoPowerup(powerLevel);
   }
 }

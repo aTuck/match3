@@ -24,7 +24,7 @@ class Board {
     for (int i = 0; i < boardWidth; i++) {
       for (int j = 0; j < boardHeight; j++) {
         do {
-          thisColor = (int)random(7);
+          thisColor = (int)random(6);
           repeats = false;
           if (i > 1) {
             if (thisColor == board[i-1][j].colorID) {
@@ -55,9 +55,9 @@ class Board {
         }
       }
     }
-    textFont(f, 16);
-    fill(255);
-    text(""+score, 250, 480);
+    textFont(f, 29);
+    fill(255,255,0);
+    text(""+score, 150, 480);
   }
 
 
@@ -67,7 +67,7 @@ class Board {
       Matchable candidateMatchable = lookForMatchable(mx, my);
       if (isValidSwap(activeMatchable, candidateMatchable)) {
         counter = 0;
-        println("\n\nAttempting swap...");
+        //println("\n\nAttempting swap...");
 
         boolean isMatches;
 
@@ -75,7 +75,7 @@ class Board {
         isMatches = (matchChecker.checkForMatches(activeMatchable) || matchChecker.checkForMatches(candidateMatchable));
 
         if (!isMatches) {
-          println("...swapped back");
+          //println("...swapped back");
           swap(activeMatchable, candidateMatchable);
           return;
         } else {
@@ -90,7 +90,7 @@ class Board {
       }
       while (matchCheckerQueue.size() > 0) {
         Matchable m = popMatchableFromQueue(matchCheckerQueue);
-        println("Checking from queue for: "+ m);
+        //println("Checking from queue for: "+ m);
         checkAndClearMatches(m);
       }
     }
@@ -103,26 +103,16 @@ class Board {
   }
   
   void checkAndClearMatches(Matchable m) {
-    println("Checking matches for: "+m);
-    if (matchChecker.checkForMatches(m)) {
-      if (matchChecker.matchSet.size() >= 4){
-        makePowerup(matchChecker.willBePowerup);
-      }
+    //println("Checking matches for: "+m);
+    if (matchChecker.checkForMatches(m)){
       for (Matchable mm : matchChecker.matchSet) {
-
-        println("Pulling down from: "+mm);
+        //println("Pulling down from: "+mm);
         score += mm.POINTS;
         mm.explode();
         pullDown(board[mm.x][mm.y]);
       }
     }
-    println("...done checkAndclear()");
-  }
-  
-  void makePowerup(Matchable m){
-    int powerLevel = matchChecker.matchSet.size();
-    matchChecker.matchSet.remove(m);
-    m.turnIntoPowerup(powerLevel);
+    //println("...done checkAndclear()");
   }
   
   void selectMatchable(int mx, int my) {
@@ -218,14 +208,14 @@ class Board {
   }
   
   void pullDown(Matchable m) {
-    println("Pulldown #"+counter++);
+    //println("Pulldown #"+counter++);
     if (m == null) {
       return;
     }
     if (m.y-1 < 0 || board[m.x][m.y] == null) {
-      Matchable temp = new Matchable(m.x, m.y, matchableSize, (int)random(7));
+      Matchable temp = new Matchable(m.x, m.y, matchableSize, (int)random(6));
       board[m.x][m.y] = temp;
-      println("Created new matchable: " + temp);
+      //println("Created new matchable: " + temp);
       matchCheckerQueue.add(temp);
       animatingQueue.add(temp);
       return;

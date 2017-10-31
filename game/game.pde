@@ -5,6 +5,8 @@ Board board;
 MatchChecker matchChecker;
 PFont f;
 int lastTime = 0;
+boolean isTime = false;
+Timer t = new Timer();
 
 void setup() {
   final float FRAMERATE = 60;
@@ -21,6 +23,9 @@ void setup() {
   
   board = new Board(BOARD_SIZE, BOARD_SIZE, MATCHABLE_SIZE);
   board.initialize();
+
+  
+  t.start();
   
   matchChecker = new MatchChecker(board);
 }
@@ -29,4 +34,20 @@ void draw() {
   background(30);
   board.display();
   board.animateMatchables();
+  textFont(f, 29);
+  fill(255,0,0);
+  text("0"+t.hour()+":0"+t.minute()+":"+t.second(), 350, 480);
+}
+
+int timer(int timerLength) {
+  int remainingTime = timerLength-millis();
+ 
+  if(remainingTime/1000>0){
+    int actualTime = (remainingTime/1000);
+    return actualTime;
+   }
+  else {
+    isTime = false;
+    return 0;     
+  }
 }
